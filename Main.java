@@ -10,7 +10,68 @@ public class Main {
         int numOfMines = scanner.nextInt();
         char[][] gameField = new char[9][9];
 
+        //add n number of mines to gamefield
+        addMinesToGameField(numOfMines, gameField);
+        //check each cell neighbour cells(around the cell) and save in gameFieldWithMineNumbers
+        char[][] gameFieldWithMineNumbers = checkMines(gameField);
+        // print number of mines in the neighbour cells
+        showGameWithNumOfMines(gameFieldWithMineNumbers);
+        //guess the mine cells using provided number of neighbour cells displayed in each cell
 
+        playGame(scanner, numOfMines, gameFieldWithMineNumbers);
+    }
+
+    private static void playGame(Scanner scanner, int numOfMines, char[][] gameFieldWithMineNumbers) {
+        int foundMines = 0;
+        while (foundMines != numOfMines) {
+            System.out.println("Set/delete mines marks (x and y coordinates): ");
+            int col = scanner.nextInt()-1;
+            int row = scanner.nextInt()-1;
+            //check if provided coordinates got a mine(X)
+            if(gameFieldWithMineNumbers[row][col]=='X'){
+                System.out.println("found mine");
+                foundMines++;
+            }
+            //check if provided coordinates got a number
+            if(Character.isDigit(gameFieldWithMineNumbers[row][col])){
+                System.out.println("There is a number here!\n");
+                continue;
+
+            }else if(gameFieldWithMineNumbers[row][col]=='*'){
+                //if coordinats got a * ehich means delete the mark ,so replace with '.
+                gameFieldWithMineNumbers[row][col]='.';
+            }else{
+                gameFieldWithMineNumbers[row][col]='*';//if coordinates have '.' or 'X' replace with a mark *
+            }
+
+            showGameWithNumOfMines(gameFieldWithMineNumbers);
+        }
+        System.out.println("Congratulations! You found all mines!");
+    }
+
+    private static void showGameWithNumOfMines(char[][] gameFieldWithMineNumbers) {
+        //char[][] gameFieldWithMineNumbers = checkMines(gameField);
+        System.out.println(" |123456789|");
+        System.out.println("-|---------|");
+        for (int i = 0; i < gameFieldWithMineNumbers.length; i++) {
+            System.out.print(i + 1 + "|");
+            for (int j = 0; j < gameFieldWithMineNumbers[0].length; j++) {
+                if (Character.isDigit(gameFieldWithMineNumbers[i][j])) {
+                    System.out.print(Character.digit(gameFieldWithMineNumbers[i][j], 10));
+                } else if(gameFieldWithMineNumbers[i][j]=='X'){
+                    System.out.print('.');
+                }else{
+                    System.out.print(gameFieldWithMineNumbers[i][j]);
+                }
+
+            }
+            System.out.print("|");
+            System.out.println();
+        }
+        System.out.println("-|---------|");
+    }
+
+    private static void addMinesToGameField(int numOfMines, char[][] gameField) {
         Random random = new Random();
         for (int i = 1; i <= numOfMines; i++) {
             int x = random.nextInt(9);
@@ -21,27 +82,6 @@ public class Main {
             }
             gameField[x][y] = 'X';
 
-        }
-//        for (char[] carray : gameField) {
-//            for (char c : carray) {
-//                if (c != 'X') {
-//                    c = '.';
-//                    char[][]  gameFieldWithMineNumbers =checkMines(gameField);
-//                }
-//                System.out.print(c);
-//            }
-//            System.out.println();
-//        }
-        char[][] gameFieldWithMineNumbers = checkMines(gameField);
-        for (int i = 0; i < gameFieldWithMineNumbers.length; i++) {
-            for (int j = 0; j < gameFieldWithMineNumbers[0].length; j++) {
-                if(Character.isDigit(gameFieldWithMineNumbers[i][j]))
-                {
-                    System.out.print(Character.digit(gameFieldWithMineNumbers[i][j],10));
-                }else
-                System.out.print(gameFieldWithMineNumbers[i][j]);
-            }
-            System.out.println();
         }
     }
 
@@ -113,7 +153,7 @@ public class Main {
             }
 
         }
-       return gameFieldWithMineNumbers;
+        return gameFieldWithMineNumbers;
     }
 
 
