@@ -13,14 +13,16 @@ public class Main {
         GameField field = new GameField(numOfMines);
         field.addMinesToGameField();
         //set the mines and play game asing the user to explore and find number of mines around each cell
+
         playGame(scanner, numOfMines, field.getField());
         //showGameWithNumOfMines(field.getField());
     }
-
+    static boolean  steppedOnMine = false;
     private static void playGame(Scanner scanner, int numOfMines, char[][] gameField) {
         int foundMines = 0;
         char[][] gameFieldWithMineNumbers = gameField.clone();
         boolean firstFreeCellChecked = false;
+
 //first free cell to be explored must be empty(not mine)//game rule
         do {
             System.out.println("Set/unset mines marks or claim a cell as free:");
@@ -52,12 +54,13 @@ public class Main {
                 //check if provided coordinates got a mine(X)
                 if (gameFieldWithMineNumbers[row][col] == 'X') {
                     showGameWithNumOfMines(gameFieldWithMineNumbers);
-                    System.out.println("You stepped on a mine and failed!");
+                    steppedOnMine=true;
+                    //System.out.println("You stepped on a mine and failed!");
                     break;
 
                 } else if (gameFieldWithMineNumbers[row][col] == '.') {
                     // if it's free you can explore by chking neighbours
-                    System.out.println("gameFieldWithMineNumbers[row][col] == '.'");
+                   // System.out.println("gameFieldWithMineNumbers[row][col] == '.'");
                     gameFieldWithMineNumbers = checkEmptyNeighbours(row, col, gameFieldWithMineNumbers);
                 } else if (Character.isDigit(gameFieldWithMineNumbers[row][col])) {
                     // System.out.println("There is a number here!\n");
@@ -83,7 +86,12 @@ public class Main {
             showGameWithNumOfMines(gameFieldWithMineNumbers);
 
         } while (foundMines != numOfMines);
-        System.out.println("Congratulations! You found all mines!");
+        if(steppedOnMine) {
+            System.out.println("You stepped on a mine and failed!");
+            showGameWithNumOfMines(gameFieldWithMineNumbers);
+        }else {
+            System.out.println("Congratulations! You found all mines!");
+        }
     }
 
 //check each neighbour(topleft,top,topright,righ,left,bottomleft,bottom,bottemright)
@@ -182,7 +190,7 @@ public class Main {
 //explres each cell for mines around recursively and returns number of mines if it come across a neighbour mine cell
     public static void explore(int row, char[][] gamefieldWithMineNumbers, int i) {
         int count = getMinesNumAround(gamefieldWithMineNumbers, row, i);
-        System.out.println("count in explore row,:" + row + " col:" + i + "count ;" + count);
+       // System.out.println("count in explore row,:" + row + " col:" + i + "count ;" + count);
         if (count == 0) {
             gamefieldWithMineNumbers[row][i] = '/';
             checkEmptyNeighbours(row, i, gamefieldWithMineNumbers);
@@ -205,9 +213,18 @@ public class Main {
                 if (Character.isDigit(gameFieldWithMineNumbers[i][j])) {
                     System.out.print(Character.digit(gameFieldWithMineNumbers[i][j], 10));
                 } else if (gameFieldWithMineNumbers[i][j] == 'X') {
-                    System.out.print('.');
+                    if(steppedOnMine){
+                        System.out.print('X');
+                    }else {
+
+                        System.out.print('.');
+                    }
                 } else if (gameFieldWithMineNumbers[i][j] == '@') {
-                    System.out.print('*');
+                    if(steppedOnMine){
+                        System.out.print('X');
+                    }else {
+                        System.out.print('*');
+                    }
                 } else {
                     System.out.print(gameFieldWithMineNumbers[i][j]);
                 }
